@@ -16,8 +16,8 @@ services:
       - "443:443"  # Expose HTTPS
     restart: unless-stopped
     volumes:
-       - ./letsencrypt:/etc/letsencrypt  # Mount for SSL certificates
-       - ./webroot:/var/www/certbot      # Mount for Certbot validation
+       - letsencrypt:/etc/letsencrypt  # Mount for SSL certificates
+       - certbot:/var/www/certbot      # Mount for Certbot validation
     devices: []
     cap_add: []
     environment: []
@@ -30,8 +30,8 @@ services:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - ./letsencrypt:/etc/letsencrypt  # Persist certificates for sharing with Nginx
-      - ./webroot:/var/www/certbot       # Required for webroot validation
+      - letsencrypt:/etc/letsencrypt  # Persist certificates for sharing with Nginx
+      - certbot:/var/www/certbot       # Required for webroot validation
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet --agree-tos; sleep 12h; done;'"
 
   nginx:
@@ -41,13 +41,19 @@ services:
       - "80:80"   # HTTP, for redirecting to HTTPS
       - "443:443" # HTTPS
     volumes:
-      - ./letsencrypt:/etc/letsencrypt      # Access SSL certificates
-      - ./webroot:/var/www/certbot          # Serve Certbot validation files
+      - letsencrypt:/etc/letsencrypt      # Access SSL certificates
+      - certbot:/var/www/certbot          # Serve Certbot validation files
       - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Custom Nginx configuration
     depends_on:
       - main_app
       - certbot
     network_mode: bridge
+
+volumes:
+  letsencrypt:
+    name: demo_app_letsencrypt  # Custom volume name for SSL data
+  certbot:
+    name: demo_app_certbot  # Custom volume name for certbot
 
 x-casaos:
   author: self
