@@ -13,8 +13,15 @@ COPY . .
 # Build the Angular app
 RUN npm run build
 
+# Stage 2: Install Certbot and obtain SSL certificates
 
-# Stage 2: Serve the app with Nginx
+FROM certbot/certbot AS certbot
+# Replace `example.com` and `your.email@example.com` with your domain and email
+# Run Certbot to generate SSL certificates (manual mode for first time; requires DNS TXT validation or similar)
+# To automate, you could integrate Certbot DNS plugins for automated cert creation
+RUN certbot certonly --standalone -d tfae.ddns.net --email tfaeusebio@hotmail.com --agree-tos --no-eff-email --non-interactive
+
+# Stage 3: Serve the app with Nginx with SSL
 
 FROM nginx:alpine
 # Create a volume for caching Nginx data
@@ -23,7 +30,10 @@ VOLUME /var/cache/nginx
 COPY --from=build app/dist/demo-app/browser /usr/share/nginx/html
 # Copy custom Nginx configuration file
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-# Expose port 80
-EXPOSE 80
+# Copy SSL certificates from Certbot stage to Nginx
+COPY --from=certbot /etc/letsencrypt/live/tfae.ddns.net/fullchain.pem /etc/ssl/certs/nginx-cert.pem
+COPY --from=certbot /etc/letsencrypt/live/tfae.ddns.net/privkey.pem /etc/ssl/private/nginx-key.pem
+# Expose both HTTP and HTTPS ports
+EXPOSE 80 443
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

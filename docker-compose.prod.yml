@@ -1,0 +1,34 @@
+name: demo-app
+services:
+  main_app:
+    cpu_shares: 10
+    command: []
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    image: tiagoeusebio/demo-app:latest
+    labels:
+      icon: https://icon.casaos.io/main/all/demo-app.png
+    ports: "4201:80"
+    restart: unless-stopped
+    volumes: []
+    devices: []
+    cap_add: []
+    environment: []
+    network_mode: bridge
+    privileged: false
+    container_name: ""
+    hostname: ""
+x-casaos:
+  author: self
+  category: self
+  hostname: tfae.ddns.net
+  icon: https://icon.casaos.io/main/all/demo-app.png
+  index: /
+  is_uncontrolled: false
+  port_map: "4201"
+  scheme: http
+  store_app_id: demo-app
+  title:
+    custom: Demo App
