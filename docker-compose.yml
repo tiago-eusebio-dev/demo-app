@@ -8,7 +8,7 @@ services:
     volumes:
       - ./letsencrypt:/etc/letsencrypt  # Share certificates with Nginx and Certbot containers
     ports:
-      - "80:80"
+      - "4201:80"
       - "443:443"
     networks:
       - demo-app-network
@@ -29,7 +29,7 @@ services:
       - demo-app
       - certbot
     ports:
-      - "80:80"
+      - "4201:80"
       - "443:443"
 
 networks:

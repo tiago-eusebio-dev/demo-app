@@ -12,7 +12,7 @@ services:
     labels:
       icon: https://icon.casaos.io/main/all/demo-app.png
     ports:
-      - "80:80"    # Expose port for internal app access if needed
+      - "4201:80"  # Expose port for internal app access if needed
       - "443:443"  # Expose HTTPS
     restart: unless-stopped
     volumes:
@@ -38,7 +38,7 @@ services:
     image: nginx:alpine
     container_name: nginx
     ports:
-      - "80:80"   # HTTP, for redirecting to HTTPS
+      - "4201:80"   # HTTP, for redirecting to HTTPS
       - "443:443" # HTTPS
     volumes:
       - letsencrypt:/etc/letsencrypt      # Access SSL certificates
